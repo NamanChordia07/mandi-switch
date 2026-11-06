@@ -1,0 +1,91 @@
+@import "tailwindcss";
+@import "@fontsource/geist-sans/400.css";
+@import "@fontsource/geist-sans/500.css";
+@import "@fontsource/geist-sans/600.css";
+@import "@fontsource/geist-sans/700.css";
+@import "@fontsource/geist-mono/400.css";
+@import "@fontsource/geist-mono/500.css";
+@import "@fontsource/geist-mono/600.css";
+@import "@fontsource/tiro-devanagari-hindi/400.css";
+
+@theme {
+  --font-sans: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --font-deva: "Tiro Devanagari Hindi", serif;
+
+  --color-ink: #0e1116;
+  --color-pane: #161b22;
+  --color-raise: #1c2330;
+  --color-hair: #2a3240;
+  --color-hair-2: #3a4456;
+
+  --color-marigold: #f2a93b;
+  --color-teal: #1fa6a0;
+  --color-mint: #3dd68c;
+  --color-amber: #f5c451;
+  --color-vermilion: #f2545b;
+  --color-indigo: #7c8cf8;
+
+  --color-text: #e6edf3;
+  --color-sub: #9aa7b4;
+  --color-mute: #6b7785;
+}
+
+:root {
+  color-scheme: dark;
+  --scale: 1;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-ink: #f6f7f9;
+  --color-pane: #ffffff;
+  --color-raise: #eef1f5;
+  --color-hair: #dde2ea;
+  --color-hair-2: #c7cfdb;
+  --color-text: #141a22;
+  --color-sub: #4a5563;
+  --color-mute: #7a8594;
+  --color-marigold: #c77c0e;
+  --color-teal: #0f7f7a;
+  --color-mint: #178a57;
+  --color-amber: #a77b06;
+  --color-vermilion: #d23a42;
+  --color-indigo: #4f5fd6;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--color-ink);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--scale));
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+}
+
+:root[data-recording="true"] { --scale: 1.1; }
+
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* thin scrollbars that don't shout */
+* { scrollbar-width: thin; scrollbar-color: var(--color-hair-2) transparent; }
+
+:focus-visible { outline: 2px solid var(--color-marigold); outline-offset: 2px; border-radius: 4px; }
+
+@keyframes pulse-once { 0% { box-shadow: 0 0 0 0 rgba(242,84,91,.55);} 100% { box-shadow: 0 0 0 10px rgba(242,84,91,0);} }
+.pulse-once { animation: pulse-once 1.2s ease-out 2; }
+@keyframes live { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+.live-dot { animation: live 1.6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+/* markdown-ish chat bodies */
+.chat-body table { border-collapse: collapse; margin: 4px 0; font-size: 12px; }
+.chat-body td, .chat-body th { border: 1px solid var(--color-hair); padding: 2px 6px; }
+.chat-body code { font-family: var(--font-mono); font-size: 12px; background: var(--color-raise); padding: 0 4px; border-radius: 4px; }
+.chat-body pre { white-space: pre-wrap; font-family: var(--font-mono); font-size: 12px; background: color-mix(in srgb, var(--color-vermilion) 10%, var(--color-raise)); border: 1px solid color-mix(in srgb, var(--color-vermilion) 40%, transparent); padding: 6px 8px; border-radius: 6px; margin: 4px 0; }
+.chat-body blockquote { border-left: 2px solid var(--color-hair-2); margin: 2px 0; padding-left: 8px; color: var(--color-sub); }

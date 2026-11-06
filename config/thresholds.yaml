@@ -1,0 +1,20 @@
+# Approval tiers by order value (excl. GST). Values are in RUPEES; null = no upper limit.
+#   auto:                      total <  Rs 50,000
+#   purchase_head:             Rs 50,000 <= total <= Rs 5,00,000
+#   purchase_head_and_finance: total >  Rs 5,00,000
+currency: INR
+tiers:
+  - name: auto
+    label: Auto-approve
+    max_value: 50000
+    max_inclusive: false
+    approvers: []
+  - name: purchase_head
+    label: Purchase Head
+    max_value: 500000
+    max_inclusive: true
+    approvers: [purchase_head]
+  - name: purchase_head_and_finance
+    label: Purchase Head + Finance
+    max_value: null
+    approvers: [purchase_head, finance]

@@ -1,0 +1,83 @@
+import { ArrowLeft, Bot, Lock, User } from 'lucide-react'
+
+const CAST = [
+  { who: 'Rohan Kulkarni', what: 'Seat engineer at Sahyadri Motors. Asks for the parts.', kind: 'human' },
+  { who: 'Meera Joshi', what: 'Purchase head. Endorses the deal — only she can.', kind: 'human' },
+  { who: 'Vikram Shah', what: 'Finance controller. Releases the purchase order — only he can.', kind: 'human' },
+  { who: 'Asha · Sanjay · Karan', what: 'People at three supplier companies. Each owns their company\'s sales agent.', kind: 'human' },
+  { who: 'mandi-intake, mandi-quotes', what: 'Read the request, open the RFQ, read every quote and catch traps.', kind: 'agent' },
+  { who: 'mandi-negotiator-×3', what: 'One per sealed supplier room. Haggle using only verified offers.', kind: 'agent' },
+  { who: 'deccan-sales, ganesh-sales, apex-sales', what: 'The suppliers\' own AI sales agents, with limits only their owners can lift.', kind: 'agent' },
+  { who: 'purchase-desk, po-issuer', what: 'Claude Code agents for Meera and Vikram. Their one money tool always asks first.', kind: 'agent' },
+  { who: 'mandi-auditor', what: 'Neutral record-keeper. Listens everywhere, writes the audit log.', kind: 'agent' },
+]
+
+const FLOW = [
+  'Rohan types a messy request in the order room.',
+  'The intake agent turns it into a precise spec; Rohan replies “yes”.',
+  'Three suppliers each get a sealed Switch room with their own sales agent.',
+  'Quotes arrive as PDFs. The analyst catches a hidden minimum order, an expired quote, and a hidden prompt injection.',
+  'Negotiators haggle in parallel, citing only offers Mandi has verified — anonymously.',
+  'When a supplier\'s agent wants to go below its limit, it asks its own human. She says no.',
+  'Meera and Vikram each tap Allow on a Switch approval from an agent only they can instruct.',
+  'Mandi\'s rules check everything again and issue the PO. Everything is saved in the room.',
+]
+
+export function How() {
+  return (
+    <div className="h-full overflow-y-auto bg-ink">
+      <div className="mx-auto max-w-[1080px] px-10 py-10">
+        <a href="#/" className="inline-flex items-center gap-1.5 text-[13px] text-sub hover:text-text"><ArrowLeft size={14} /> Back to the Control Room</a>
+        <h1 className="mt-6 text-[40px] font-semibold leading-tight tracking-tight">How Mandi works</h1>
+        <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-sub">
+          Buying one part can take a factory two weeks of emails. Mandi lets AI agents from different companies negotiate in sealed chat rooms —
+          while every rupee still needs a person's tap to move.
+        </p>
+
+        <h2 className="mt-12 text-[20px] font-semibold">What Switch is</h2>
+        <p className="mt-2 max-w-3xl text-[15px] leading-relaxed text-sub">
+          Switch puts people and AI agents in the same chat rooms (here, Mattermost). Each agent has an owner, and its owner decides who may give it instructions.
+          When an agent wants to do something risky, Switch posts an approval request in the room — and only the people that agent listens to can answer.
+          Rooms also keep shared instructions, roles and documents, so the whole deal lives in one place.
+        </p>
+
+        <h2 className="mt-12 text-[20px] font-semibold">The cast</h2>
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          {CAST.map((c) => (
+            <div key={c.who} className="rounded-lg border border-hair bg-pane p-4">
+              <div className={`flex items-center gap-2 text-[14px] font-semibold ${c.kind === 'human' ? 'text-marigold' : 'text-teal'}`}>
+                {c.kind === 'human' ? <User size={14} /> : <Bot size={14} />}{c.who}
+              </div>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-sub">{c.what}</p>
+            </div>
+          ))}
+        </div>
+
+        <h2 className="mt-12 text-[20px] font-semibold">Three locks on the money</h2>
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          {[
+            ['1. Switch identity', 'Who may even talk to an agent. The PO issuer only listens to Vikram; a supplier\'s agent only to its owner and Mandi\'s negotiator.', 'text-teal border-teal/40'],
+            ['2. Switch approval', 'The money tools always ask first. Switch shows the request in the room; only the agent\'s one permitted person can allow it, and Switch records who did.', 'text-indigo border-indigo/40'],
+            ['3. Mandi rules', 'Even after both taps, code refuses a PO that doesn\'t match the deal, the approval tier, or a valid supplier. Prompts aren\'t security; code is.', 'text-marigold border-marigold/40'],
+          ].map(([t, d, cls]) => (
+            <div key={t} className={`rounded-lg border bg-pane p-5 ${cls}`}>
+              <div className="flex items-center gap-2 text-[15px] font-semibold"><Lock size={15} />{t}</div>
+              <p className="mt-2 text-[13.5px] leading-relaxed text-sub">{d}</p>
+            </div>
+          ))}
+        </div>
+
+        <h2 className="mt-12 text-[20px] font-semibold">The flow, in eight steps</h2>
+        <ol className="mt-4 space-y-2.5">
+          {FLOW.map((f, i) => (
+            <li key={i} className="flex gap-4 text-[15px] leading-relaxed text-sub">
+              <span className="num flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-hair text-[12px] text-text">{i + 1}</span>{f}
+            </li>
+          ))}
+        </ol>
+        <p className="mt-12 text-[22px] font-medium tracking-tight">Agents negotiate. Humans decide. <span className="text-marigold">Switch enforces.</span></p>
+        <p className="mt-2 text-[12.5px] text-mute">Sahyadri Motors and all suppliers are fictional. Inspired by what Divya saw on the procurement floor at an automaker.</p>
+      </div>
+    </div>
+  )
+}

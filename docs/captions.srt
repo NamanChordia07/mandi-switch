@@ -1,0 +1,67 @@
+1
+00:00:00,500 --> 00:00:07,000
+At an automaker, buying one bolt can take two weeks of emails.
+
+2
+00:00:07,000 --> 00:00:14,500
+We built Mandi to fix that — on Switch.
+
+3
+00:00:15,000 --> 00:00:22,000
+An engineer asks in chat.
+
+4
+00:00:22,000 --> 00:00:30,000
+Mandi's intake agent turns it into a precise spec and asks one question.
+
+5
+00:00:30,000 --> 00:00:37,500
+Each supplier gets a sealed Switch room with its own AI sales agent —
+
+6
+00:00:37,500 --> 00:00:45,000
+owned by the supplier, not by us.
+
+7
+00:00:45,000 --> 00:00:54,000
+The cheapest quote hides a 50,000-piece minimum on page 2. Another expired last week.
+
+8
+00:00:54,000 --> 00:01:05,000
+Mandi catches both — with the exact line it found them on.
+
+9
+00:01:05,000 --> 00:01:14,000
+This supplier hid instructions for our AI inside its PDF.
+
+10
+00:01:14,000 --> 00:01:25,000
+Mandi blocks it and closes their room. Even a fooled agent couldn't issue a PO.
+
+11
+00:01:25,000 --> 00:01:38,000
+Agents haggle in parallel, citing only offers Mandi has verified — never naming who.
+
+12
+00:01:38,000 --> 00:01:52,000
+When Deccan's agent is asked to go below its limit, it must ask its own human.
+
+13
+00:01:52,000 --> 00:02:05,000
+She says no.
+
+14
+00:02:05,000 --> 00:02:18,000
+The money needs two humans. Each approves in Switch, on an agent that listens only to them.
+
+15
+00:02:18,000 --> 00:02:35,000
+Only one agent can ever issue a purchase order.
+
+16
+00:02:35,000 --> 00:02:50,000
+Minutes, not days. ₹62,000 saved. Every step recorded in the room.
+
+17
+00:02:50,000 --> 00:03:00,000
+Agents negotiate. Humans decide. Switch enforces. — Mandi.

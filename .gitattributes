@@ -1,0 +1,12 @@
+# Normalise line endings in the repository (files may be edited on Windows and macOS/Linux)
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.pdf binary
+*.ttf binary
+*.woff binary
+*.woff2 binary

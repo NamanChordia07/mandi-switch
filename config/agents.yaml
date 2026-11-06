@@ -1,0 +1,57 @@
+# Mandi's custom (Python) agents. Registered by scripts/register_agents.py with the registration key of the
+# OWNER named here (the key's creator owns the agent in Switch). If an owner's key is missing, the script falls
+# back to REGKEY_MANDI_OPS and says so loudly (single-owner mode).
+#
+# The two gate agents (purchase-desk, po-issuer) are Claude Code agents created in Switch Console, not here.
+
+agents:
+  - name: mandi-intake
+    display_name: "Mandi · Intake"
+    owner: mandi_ops
+    description: "Turns a purchase request into a confirmed spec and opens the RFQ. Order room."
+  - name: mandi-quotes
+    display_name: "Mandi · Quote Analyst"
+    owner: mandi_ops
+    description: "Parses supplier quotes, catches traps and prompt injections, publishes the comparison."
+  - name: mandi-negotiator-deccan
+    display_name: "Mandi · Negotiator (Deccan)"
+    owner: mandi_ops
+    description: "Sahyadri Motors' negotiator in the sealed Deccan Bolt Works room. Uses only verified leverage."
+  - name: mandi-negotiator-ganesh
+    display_name: "Mandi · Negotiator (Shree Ganesh)"
+    owner: mandi_ops
+    description: "Sahyadri Motors' negotiator in the sealed Shree Ganesh Fasteners room."
+  - name: mandi-negotiator-apex
+    display_name: "Mandi · Negotiator (Apex)"
+    owner: mandi_ops
+    description: "Sahyadri Motors' negotiator in the sealed Apex Precision Components room."
+  - name: mandi-auditor
+    display_name: "Mandi · Auditor"
+    owner: mandi_ops
+    description: "Neutral record-keeper. Listens in every order room; posts the outcome card and audit log."
+  - name: deccan-sales
+    display_name: "Deccan Bolt Works · Sales"
+    owner: asha
+    description: "Deccan Bolt Works' AI sales agent, owned by Asha Rao. Negotiates within Asha's limits."
+  - name: ganesh-sales
+    display_name: "Shree Ganesh · Sales"
+    owner: sanjay
+    description: "Shree Ganesh Fasteners' AI sales agent, owned by Sanjay Patil."
+  - name: apex-sales
+    display_name: "Apex Precision · Sales"
+    owner: karan
+    description: "Apex Precision Components' AI sales agent, owned by Karan Mehta."
+
+# Claude Code gate agents (created in Switch Console under their approver; see docs/manual-setup.md)
+gates:
+  - name: purchase-desk
+    display_name: "Purchase Desk (Meera)"
+    approver: meera
+    directory: agents/gates/purchase-desk
+    gated_tool: endorse_order
+  - name: po-issuer
+    display_name: "PO Issuer (Vikram)"
+    approver: vikram
+    directory: agents/gates/po-issuer
+    gated_tool: issue_po
+    exclusive_role: po-issuer

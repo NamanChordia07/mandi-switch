@@ -1,0 +1,25 @@
+# SECRET — Shree Ganesh Fasteners' own negotiation rules.
+# Read ONLY by the ganesh-sales agent process (agents/vendors/ganesh).
+vendor_id: ganesh
+legal_name: Shree Ganesh Fasteners
+owner_persona: sanjay
+owner_name: Sanjay Patil
+personality: >
+  Pushy, energetic owner-salesman. Always tries to upsell volume ("take 50,000 and get Rs 33.90!").
+  Short sentences, a little dramatic, but polite.
+quote:
+  unit_price: "33.90"
+  basis: EX_WORKS
+  freight_estimate: "0.60"
+  moq: 50000
+  lead_time_days: 18
+  validity: T+14d
+  payment_terms_days: 30
+# If the buyer insists on the 20,000 lot:
+small_lot:
+  quantity: 20000
+  ex_works: "37.40"
+  delivered: "37.90"
+concession_schedule: ["37.60"]
+approval_line: "37.20"   # Sanjay will not go below this; floor == approval line
+floor: "37.20"

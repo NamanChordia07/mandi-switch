@@ -1,0 +1,10 @@
+# Konkan Fasteners has no agent and no room: its quote was "found in an old email thread".
+vendor_id: konkan
+legal_name: Konkan Fasteners
+quote:
+  unit_price: "34.80"
+  basis: DELIVERED
+  moq: 10000
+  lead_time_days: 20
+  validity: T-9d          # expired 9 days before the scenario date
+  payment_terms_days: 45

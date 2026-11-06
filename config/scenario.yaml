@@ -1,0 +1,85 @@
+# The demo scenario. All dates are RELATIVE to the scenario date T (today unless
+# MANDI_SCENARIO_DATE is set) so the demo works on any day. "T+40d" = 40 days after T.
+# Every company and person here is fictional.
+
+order:
+  order_id: SM-PR-2026-0147
+  short_id: SM-PR-0147
+  buyer: Sahyadri Motors Pvt. Ltd.
+  buyer_address: "Plot B-14, MIDC Chakan Phase II, Pune 410501, Maharashtra (fictional)"
+  buyer_gstin: "27AAACS0000A1Z5 (sample)"
+  plant: Chakan Plant 2, Pune
+  requester: rohan
+  part:
+    name: Seat mounting bolt
+    spec: "M10 x 1.25 x 35 mm, hex flange, property class 10.9, zinc-flake coated (silver), per drawing SM-STD-0412 rev C"
+    drawing_ref: SM-STD-0412 rev C
+    uom: pieces
+  quantity: 20000
+  needed_by: T+40d
+  delivery: "DAP Chakan Plant 2"
+  currency: INR
+  prices_exclude: GST
+  raw_request_message: >
+    hey team, need seat bolts for the new rear bench line - the M10 flange ones,
+    10.9 grade, zinc flake like last time. about 20k pcs. need them at chakan
+    by mid next month latest, line trials start after that. pls arrange asap
+
+# Who is who. Switch user / Mattermost username per persona. Played by the team in the demo.
+personas:
+  rohan:  { name: Rohan Kulkarni, title: "Requester, Seat Engineering", company: buyer }
+  meera:  { name: Meera Joshi,    title: "Purchase Head",               company: buyer, approver_role: purchase_head }
+  vikram: { name: Vikram Shah,    title: "Finance Controller",          company: buyer, approver_role: finance }
+  asha:   { name: Asha Rao,       title: "Sales Head, Deccan Bolt Works", company: deccan }
+  sanjay: { name: Sanjay Patil,   title: "Owner, Shree Ganesh Fasteners", company: ganesh }
+  karan:  { name: Karan Mehta,    title: "Sales, Apex Precision Components", company: apex }
+
+# Public vendor directory (what the BUYER knows). Secret rules live in config/vendors/*.yaml
+# and are read only by that vendor's own agent process.
+vendors:
+  deccan:
+    legal_name: Deccan Bolt Works
+    short: Deccan
+    contact_persona: asha
+    agent: deccan-sales
+    negotiator: mandi-negotiator-deccan
+    has_room: true
+    quote_file: seed/quotes/deccan-quote.pdf
+  ganesh:
+    legal_name: Shree Ganesh Fasteners
+    short: Shree Ganesh
+    contact_persona: sanjay
+    agent: ganesh-sales
+    negotiator: mandi-negotiator-ganesh
+    has_room: true
+    quote_file: seed/quotes/ganesh-quote.pdf
+  apex:
+    legal_name: Apex Precision Components
+    short: Apex Precision
+    contact_persona: karan
+    agent: apex-sales
+    negotiator: mandi-negotiator-apex
+    has_room: true
+    quote_file: seed/quotes/apex-quote.pdf
+  konkan:
+    legal_name: Konkan Fasteners
+    short: Konkan
+    contact_persona: null
+    agent: null
+    negotiator: null
+    has_room: false            # quote only, "found in email"
+    quote_file: seed/quotes/konkan-quote.pdf
+
+# Buyer negotiation policy (code decides numbers; the LLM only writes the words).
+negotiation:
+  max_rounds: 4
+  target_discount_vs_best_quote: 0.08     # target <= best valid quote x 0.92
+  undercut_competing_by_paise: 50          # target <= verified competing landed - Rs 0.50
+  opening_below_target_paise: 120          # opening ask = target - Rs 1.20
+  concession_per_round_paise: 40           # buyer concedes at most Rs 0.40 per round
+  leverage_wait_seconds: 45                # wait this long for a verified competing offer before round 1
+  price_tolerance_paise: 1                 # +/- Rs 0.01 when verifying a claim
+
+# Paper-process baseline used on the Outcome card.
+baseline:
+  paper_process_days: "4-10"
