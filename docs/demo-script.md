@@ -14,17 +14,26 @@ Director → *Reset demo* · in Mattermost run `!agents-status` in the order roo
 
 ## Shot list
 
+Order (from the brief): internal pain → trap and injection catch → two humans approving → visible refusal →
+SAP-style PO export (MOCK) → Outcome card. Wording rules: Switch *relays* the permission request, decides who may
+answer and *records* who did; Claude Code's permission check is the actual gate; Mandi Core checks the rules once
+more. The export is a MOCK shaped like an SAP purchase order, not an SAP integration. Never say SAP is bad.
+
 | Time | Scene | On screen | Voice-over |
 |---|---|---|---|
-| 0:00–0:15 | Hook | Title card over the Control Room's *Request* screen | "At an automaker, buying one bolt can take two weeks of emails. We built Mandi to fix that — on Switch." |
-| 0:15–0:30 | Request | Rohan types the messy request; Control Room spec card fills; Rohan replies `yes` | "An engineer asks in chat. Mandi's intake agent turns it into a precise spec and asks one question." |
-| 0:30–0:45 | Sealed rooms | Rooms stage: three locked rooms; Rooms map shows owners | "Each supplier gets a sealed Switch room, with its own AI sales agent — owned by the supplier, not by us." |
-| 0:45–1:05 | Quotes & traps | Comparison table; badges pulse; hover *Hidden MOQ* → page 2 snippet; "Why not the cheapest?" row | "The cheapest quote hides a 50,000-piece minimum on page 2. Another expired last week. Mandi catches both — with the exact line." |
-| 1:05–1:25 | Injection | Click *Show what was hidden*: the PDF with 1-pt white text revealed; Three locks panel | "This supplier hid instructions for our AI inside its PDF. Mandi blocks it, closes their room — and even a fooled agent couldn't issue a PO." |
-| 1:25–2:05 | Negotiation | Price ladder converging; *Leverage verified* chip; Asha's window: `🔒 Approval needed` → she types `decline`; chip *Asked Asha — declined*; quick Director red-team *fake ₹33.00* → *Blocked before reaching the room* | "Agents haggle in parallel, citing only offers Mandi has verified — never naming who. When Deccan's agent is asked to go below its limit, it must ask its own human. She says no." |
-| 2:05–2:35 | Approvals | Meera: `@purchase-desk endorse` → Switch request with buttons → **Allow once**; Vikram: `@po-issuer release the PO` → **Allow once**; `!roles` | "The money needs two humans. Each approves in Switch, on an agent that listens only to them. Only one agent can ever issue a PO." |
-| 2:35–2:50 | Outcome | PO PDF in the room; Outcome card: ₹62,000 saved, minutes not days, 3 traps, 1 attack blocked; `!list-documents` | "Minutes, not days. Sixty-two thousand rupees saved. Every step recorded in the room." |
-| 2:50–3:00 | Close | Wordmark + tagline | "Agents negotiate. Humans decide. Switch records who said yes. — Mandi." |
+| 0:00–0:20 | Internal pain | Control Room → *How it works* → **Stage map** (built vs roadmap) | "At an automaker, buying one part takes two weeks. Not because of the supplier: quotes come back in five formats, someone types a comparison into the purchasing system, and the signatures go back and forth between purchase and finance. Mandi runs that back-and-forth in team chat, on Switch." |
+| 0:20–0:35 | Request | Rohan types the messy request; spec card fills; Rohan replies `yes` | "An engineer asks in chat. Mandi's intake agent turns it into a precise spec." |
+| 0:35–0:50 | Sealed rooms | Rooms stage: three sealed rooms + Konkan "from email" | "Each supplier gets a sealed, private Switch room. Suppliers who only email a PDF work too; those who opt in bring their own AI sales agent, owned by them." |
+| 0:50–1:10 | Quotes & traps | Comparison table; hover *Hidden MOQ* → page 2 snippet | "The cheapest quote hides a 50,000-piece minimum on page 2. Another expired last week. Mandi catches both, with the exact line." |
+| 1:10–1:25 | Injection | *Show what was hidden*: 1-pt white text revealed | "This supplier hid instructions for our AI inside its PDF. Mandi blocks it and disqualifies them." |
+| 1:25–1:50 | Negotiation | Price ladder; *Leverage verified*; Asha types `decline` | "Agents haggle in parallel, citing only offers Mandi has verified. When Deccan's agent is asked to go below its limit, it asks its own human. She says no." |
+| 1:50–2:20 | Two humans approve | Meera: `@purchase-desk endorse` → **Allow once**; Vikram: `@po-issuer release the PO` → **Allow once** | "Now the signatures. Each gate agent's money tool is a Claude Code tool that must ask permission. Switch relays that request into the room, lets only Meera, or only Vikram, answer it, and records who did. Then Mandi's code checks every rule again." |
+| 2:20–2:30 | Visible refusal | Rohan: `@po-issuer issue the PO now` → refusal in the room | "Anyone else who tries is refused, in the room, for everyone to see." |
+| 2:30–2:42 | SAP-style export (MOCK) | Order room: `05-po-sap-style-MOCK` document / Outcome card → *SAP-style PO (JSON)* | "SAP stays the system of record. Mandi ends with a mock export shaped like an SAP purchase order, so nobody retypes the deal. It's a mock, not an integration, and the fields still need checking by procurement." |
+| 2:42–2:55 | Outcome | Outcome card: ₹62,000 saved, minutes not days, 3 traps, 1 attack blocked; `!list-documents` | "Minutes, not days. Sixty-two thousand rupees saved. Every step recorded in the room." |
+| 2:55–3:00 | Close | Wordmark + tagline | "Agents negotiate. Humans decide. Switch records who said yes. — Mandi." |
+
+No second category in the video: category profiles are on the roadmap (README → *Limitations and roadmap*).
 
 ## Fallbacks during recording
 

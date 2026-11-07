@@ -18,7 +18,7 @@ GIF suggestions: (a) the price ladder converging in the Control Room; (b) Meera 
    quotes in five formats, a "cheapest" offer hiding a 50,000-unit minimum, approvals chased by phone. Mandi moves it
    into team chat with Switch: one sealed room per supplier, each with the supplier's *own* AI sales agent; Mandi's
    agents catch the traps, negotiate in parallel using only verified offers, and the purchase order waits for the
-   purchase head and finance to approve in Switch. Demo: ₹62,000 saved, 3 traps caught, 1 prompt injection blocked.
+   purchase head and finance to tap Allow on a permission request Switch relays to them. Demo: ₹62,000 saved, 3 traps caught, 1 prompt injection blocked.
    #HowISwitch #AIagents #procurement
 2. **The one sentence that shaped our design:** "Anyone the agent takes messages from can answer its requests." We
    made the agent that issues purchase orders listen to exactly one human, so only that human can approve — not our

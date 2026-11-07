@@ -9,7 +9,7 @@ This document is written so Naman and Divya can explain every part of Mandi to a
 | **Switch server + Mattermost** | Switch (SandboxAQ), Docker | started by Switch Console | rooms, identity, addressing, permission requests, documents, roles, agent protocol |
 | **Mandi Core** | Python 3.12, FastAPI, SQLite (SQLModel) | `:8700` | the rules: state machine, quote parsing + traps + injection scan, comparison, negotiation strategy, verified leverage, approval tiers, PO gate, PO PDF, hash-chained audit, event stream |
 | **Custom agents** (9) | Python asyncio + our `switchclient` | `scripts/run_all.py` | talk in Switch rooms; call Core for every decision |
-| **Gate agents** (2) | Claude Code, run by Switch Console | Console / agent controller | the only path to money: one MCP tool each, approved in Switch by one human |
+| **Gate agents** (2) | Claude Code, run by Switch Console | Console / agent controller | the only path to money: one MCP tool each; Claude Code asks permission, Switch relays the request to one human and records the answer |
 | **Mandi MCP server** | `mcp` SDK (stdio) | started by Claude Code from `.mcp.json` | exposes Core to the gate agents (read tools + one gated tool per profile) |
 | **Control Room** | React 19, Vite, Tailwind 4, Motion, Recharts | served by Core at `/` | live explainer for judges: stages, rooms, quotes, price ladder, approvals, outcome, audit |
 
