@@ -7,6 +7,7 @@ through Mandi Core (they live in separate sealed rooms by design — no buyer ag
 from __future__ import annotations
 
 import asyncio
+import os
 import re
 from datetime import date, timedelta
 from pathlib import Path
@@ -19,7 +20,8 @@ from agents.common.formatting import wordsmith
 from agents.common.runtime import (ROOT, Core, CoreHTTPError, make_switch_agent, pace, set_speed,
                                    setup_logging)
 from agents.switchclient import Event
-from core.config import resolve_date, scenario, scenario_date
+from core import chaser
+from core.config import persona, resolve_date, scenario, scenario_date
 from core.money import fmt_inr, fmt_unit, indian_group
 
 NAME = "mandi-intake"
@@ -64,6 +66,8 @@ class Intake:
         self.sw = make_switch_agent(NAME, rooms=[self.order_room])
         self.core = Core()
         self.pending: dict[str, Any] = {}   # order_id, thread_id while waiting for the requester's "yes"
+        self.chase_cfg = chaser.load(scenario().get("signoff_chaser"), os.environ)
+        self.chases: dict[str, asyncio.Task] = {}
         self.sw.on("message", addressed_only=False)(self.on_message)
 
     # ------------------------------------------------------------------ Switch messages
@@ -273,12 +277,15 @@ class Intake:
             await self.confirm(None, by_user=scenario()["order"]["requester"])
         elif kind == "director.reset":
             self.pending = {}
+            self.stop_chases()
         elif kind == "demo.reset":
             self.pending = {}
+            self.stop_chases()
             await self.sw.post(self.order_room, "🔄 **New run.** Mandi Core was reset; earlier messages above "
                                "belong to a previous run.")
         elif kind == "order.awarded":
             await self.announce_award(oid)
+            self.start_chase(oid, "purchase_head")
         elif kind == "approval.decided":
             await self.on_approval(oid, data)
         elif kind == "po.issued":
@@ -317,11 +324,62 @@ class Intake:
                 await self.sw.post(self.order_room, "✅ Meera endorsed the award in Switch.\n🔒 @vikram finance "
                                    "release needed: ask the PO Issuer agent (`po-issuer`) to release the PO. "
                                    "It is the only agent that can, and only with your approval in Switch.")
+                self.start_chase(oid, "finance")
         elif data.get("step") == "purchase_head" and data.get("decision") == "DECLINED":
             await self.sw.post(self.order_room, "⛔ Meera declined the endorsement. The award is withdrawn and no "
                                "PO can be issued. @rohan we'll revert with next steps.")
         elif data.get("step") == "finance" and data.get("decision") == "DECLINED":
             await self.sw.post(self.order_room, "⛔ Vikram declined the PO release. Nothing was issued.")
+
+    # ------------------------------------------------------------------ sign-off chaser (off by default)
+    def start_chase(self, oid: str, step: str) -> None:
+        if not self.chase_cfg.enabled:
+            return
+        key = f"{oid}:{step}"
+        if key in self.chases and not self.chases[key].done():
+            return
+        self.chases[key] = asyncio.create_task(self.chase(oid, step))
+
+    def stop_chases(self) -> None:
+        for t in self.chases.values():
+            t.cancel()
+        self.chases.clear()
+
+    async def chase(self, oid: str, step: str) -> None:
+        """Remind, then escalate, while the order still waits on this sign-off. Only posts messages."""
+        cfg = self.chase_cfg
+        approver = next((p for p, i in scenario()["personas"].items() if i.get("approver_role") == step), "")
+        loop = asyncio.get_running_loop()
+        started, done = loop.time(), set()
+        try:
+            while True:
+                await asyncio.sleep(cfg.poll_s)
+                view = await self.core.get(f"/orders/{oid}")
+                if chaser.waiting_on(view["order"]["state"], (view.get("tier") or {}).get("approvers", [])) != step:
+                    return
+                elapsed = loop.time() - started
+                action = chaser.next_action(elapsed, done, cfg)
+                if not action:
+                    continue
+                done.add(action)
+                text = chaser.message(action, step, oid, approver=approver,
+                                      approver_name=persona(approver).get("name", approver),
+                                      escalate_to=cfg.escalate_to,
+                                      escalate_name=persona(cfg.escalate_to).get("name", cfg.escalate_to),
+                                      elapsed_s=elapsed)
+                await self.sw.post(self.order_room, text)
+                kind = "SIGNOFF_REMINDED" if action == "remind" else "SIGNOFF_ESCALATED"
+                who = approver if action == "remind" else cfg.escalate_to
+                await self.core.post(f"/orders/{oid}/audit-note", {
+                    "kind": kind, "summary": f"Sign-off chaser: {action} sent to "
+                    f"{persona(who).get('name', who)} ({chaser.STEP_LABEL[step]}, waiting {int(elapsed // 60)} min).",
+                    "data": {"step": step, "action": action, "to": who}})
+                if action == "escalate":
+                    return
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            log.warning("sign-off chaser stopped for %s/%s: %s", oid, step, exc)
 
     async def on_po(self, oid: str, po: dict[str, Any]) -> None:
         pdf = ROOT / po["pdf_path"]

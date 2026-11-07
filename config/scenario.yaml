@@ -95,3 +95,12 @@ po_export:
   unit: PC
   price_unit: 1
   vendor_codes: { deccan: V100231, ganesh: V100417, apex: V100562, konkan: V100088 }
+
+# Sign-off chaser (core/chaser.py): if a sign-off sits unanswered, remind the approver in the order room, then
+# escalate to a named human there. OFF by default so it can't fire during a demo; MANDI_CHASER=1 turns it on.
+# It only posts messages: it never approves, declines or changes the order.
+signoff_chaser:
+  enabled: false
+  remind_after_s: 300
+  escalate_after_s: 600
+  escalate_to: rohan        # persona id; the requester, whose line trial is waiting

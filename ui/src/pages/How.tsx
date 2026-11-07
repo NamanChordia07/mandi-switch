@@ -18,7 +18,7 @@ const STAGES: { name: string; built: boolean; what: string }[] = [
   { name: 'RFQ and quotes', built: true, what: 'Sealed room per supplier; PDF quotes read with evidence; traps and prompt injection caught. Works with PDF-only suppliers too.' },
   { name: 'Comparative statement', built: true, what: 'Landed-cost comparison with a code-written recommendation, saved to the room; MOCK CSV export.' },
   { name: 'Negotiation', built: true, what: 'Parallel, in sealed rooms, citing only verified offers. Supplier agents are an opt-in "supplier desk".' },
-  { name: 'Sign-off chain', built: true, what: 'Value tiers; purchase head then finance allow a Claude Code permission request that Switch relays and records. Reminder and escalation chaser: roadmap.' },
+  { name: 'Sign-off chain', built: true, what: 'Value tiers; purchase head then finance allow a Claude Code permission request that Switch relays and records. Optional reminder-then-escalation chaser (off by default).' },
   { name: 'Purchase order', built: true, what: 'PO PDF after the rules check again; MOCK SAP-style PO export (not an SAP integration) for the system of record.' },
   { name: 'Delivery receipt', built: false, what: 'Goods receipt at the plant and closing the order: roadmap.' },
 ]

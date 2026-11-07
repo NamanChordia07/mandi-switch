@@ -79,7 +79,7 @@ Where Mandi sits in a purchase, and what is built today. The same map is in the 
 | 2 | RFQ and quotes | ✅ Built | One sealed Switch room per supplier; PDF quotes read with evidence for every value; traps and prompt injection caught. PDF-only suppliers work too. |
 | 3 | Comparative statement | ✅ Built | Landed-cost comparison with a recommendation written by code, saved as a room document; **MOCK** CSV export. |
 | 4 | Negotiation | ✅ Built | Parallel, in sealed rooms, citing only verified offers and never naming a rival. Supplier agents are opt-in. |
-| 5 | Sign-off chain | ✅ Built | Value tiers; purchase head, then finance, each allow a permission request. Reminder and escalation chaser: roadmap. |
+| 5 | Sign-off chain | ✅ Built | Value tiers; purchase head, then finance, each allow a permission request. Optional chaser: a reminder in the order room, then an escalation to a named person (off by default, `MANDI_CHASER=1`). |
 | 6 | Purchase order | ✅ Built | PO PDF after the rules check again; **MOCK** SAP-style PO export (JSON/CSV). Not an SAP integration. |
 | 7 | Delivery receipt | 🛣️ Roadmap | Goods receipt at the plant and closing the order. |
 
@@ -248,13 +248,13 @@ Red-team (Director drawer, `D`): *fake leverage* (blocked before it reaches the 
 ## Tests
 
 ```bash
-.venv/bin/python -m pytest                  # 67 tests, offline: no Switch, no LLM calls
-.venv/bin/python tests/run_fake_e2e.py      # the REAL 9 agents end-to-end against a protocol stub (no Docker)
+.venv/bin/python -m pytest                  # 71 tests, offline: no Switch, no LLM calls
+.venv/bin/python tests/run_fake_e2e.py      # the REAL 9 agents end-to-end against a protocol stub (no Docker); add --chaser to test the sign-off chaser
 .venv/bin/python scripts/simulate.py --fast # end-to-end through Mandi Core's HTTP API (needs Core running)
 .venv/bin/python scripts/live_rehearsal.py  # LIVE: plays Rohan/Asha in Mattermost; waits for a HUMAN to tap Allow
 ```
 
-Covered: Indian money formatting, every trap, ranking and tie-breaks, tier boundaries (₹49,999 / ₹50,000 / ₹5,00,000 / ₹5,00,001), illegal state transitions, leverage verification (verified, fabricated, expired, disqualified, competitor named, number smuggled in text), every PO-gate check, audit-chain tampering and deletion, vendor token scoping, sealed-room rules (room plan, live membership, addressing plan, Mattermost channel type), the MOCK exports, the full scenario, the decline path, and the Switch client's ping/pong, resume and `taken_over` handling.
+Covered: Indian money formatting, every trap, ranking and tie-breaks, tier boundaries (₹49,999 / ₹50,000 / ₹5,00,000 / ₹5,00,001), illegal state transitions, leverage verification (verified, fabricated, expired, disqualified, competitor named, number smuggled in text), every PO-gate check, audit-chain tampering and deletion, vendor token scoping, sealed-room rules (room plan, live membership, addressing plan, Mattermost channel type), the MOCK exports, the sign-off chaser, the full scenario, the decline path, and the Switch client's ping/pong, resume and `taken_over` handling.
 
 ## Security notes
 
@@ -271,7 +271,7 @@ Covered: Indian money formatting, every trap, ranking and tie-breaks, tier bound
 ## Limitations and roadmap
 
 - **Category profiles (roadmap).** The engine today is built around one category (fasteners: grade, finish, MOQ, lead time, landed cost per piece). Real purchases also span sheet metal, plastics (mould cost and ownership), ADAS sensors (certification, firmware, end-of-life risk) and hardware + SaaS (device price plus a subscription over the contract term, auto-renew escalators). The plan is a **category profile** in config, not code: spec attributes, a cost model (landed cost or total cost of ownership) and per-category trap rules.
-- **Requisition approval** and **delivery receipt** (stages 1 and 7) are not built. Neither is a **sign-off chaser** (reminder, then escalation to a named person in the order room).
+- **Requisition approval** and **delivery receipt** (stages 1 and 7) are not built. The **sign-off chaser** is built but off by default and only posts messages; it doesn't yet page anyone outside the order room.
 - **No real SAP or Ariba integration.** The exports are mocks shaped like ERP purchase-order data.
 - Supplier-side approval is a message-based fallback (sender verified via Switch); the next step is a Claude Code "desk" agent per supplier so it becomes a relayed permission request too.
 - The two gate agents are owned by the operator account (Console can only run agents on the signed-in owner's machine); the addressing policy, not ownership, restricts them to Meera and Vikram.

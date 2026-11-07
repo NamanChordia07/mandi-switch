@@ -1,6 +1,9 @@
 """End-to-end run of Mandi's REAL agents against tests/fake_switch.py (no Docker, no LLM spend).
 
-    python tests/run_fake_e2e.py
+    python tests/run_fake_e2e.py [--chaser]
+
+--chaser turns the sign-off chaser on with short timings and checks the reminder and escalation are posted
+before the purchase head endorses.
 
 Starts fake Switch (:8199) + Mandi Core (:8701) with temp state/secrets dirs, registers agents, bootstraps rooms,
 starts all 9 custom agents, plays the humans (Rohan, Asha) through the fake server, then performs the two gate
@@ -21,6 +24,7 @@ import httpx
 ROOT = Path(__file__).resolve().parents[1]
 PY = sys.executable
 FAKE, CORE = "http://127.0.0.1:8199", "http://127.0.0.1:8701"
+CHASER = "--chaser" in sys.argv
 
 
 def wait_for(pred, timeout=120, every=1.0, what=""):
@@ -88,6 +92,12 @@ def main() -> int:
         o = cur()
         offer = next(x for x in o["offers"] if x["id"] == o["order"]["awarded_offer_id"])
         print("AWARDED", o["order"]["awarded_vendor_id"], offer["unit_price_paise"])
+        if CHASER:
+            wait_for(lambda: any("Reminder: the **purchase head endorsement**" in m["body"] for m in flog()), 30,
+                     what="chaser reminder")
+            wait_for(lambda: any("Escalation: the **purchase head endorsement**" in m["body"] for m in flog()), 30,
+                     what="chaser escalation")
+            print("chaser: reminder + escalation posted")
         D = {"Authorization": f"Bearer {env['CORE_TOKEN_MCP_PURCHASE_DESK']}"}
         P = {"Authorization": f"Bearer {env['CORE_TOKEN_MCP_PO_ISSUER']}"}
         print(httpx.post(f"{CORE}/orders/{o['order']['id']}/endorse", headers=D, json={"note": "e2e"}).status_code)
