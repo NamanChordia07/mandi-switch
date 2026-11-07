@@ -32,6 +32,7 @@ from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv(ROOT / ".env", override=False)
 from agents.switchclient import SwitchAgent, SwitchError  # noqa: E402
+from common import sealed  # noqa: E402
 
 SECRETS = Path(os.environ.get("MANDI_SECRETS_DIR", ROOT / "secrets"))
 KEYS = SECRETS / "agent-keys.local.json"
@@ -43,16 +44,20 @@ MM_USER = {p: os.environ.get(f"MM_USER_{p.upper()}", p) for p in SC["personas"]}
 
 ROOMS = {
     "order": {"name": f"{ORDER_SHORT} · Seat bolts · Order room", "channel_type": "channel_public",
+              "read_visibility": "public", "write_visibility": "public",
               "agents": ["mandi-intake", "mandi-quotes", "mandi-auditor"],
               "people": ["rohan", "meera", "vikram"], "instructions": "order.md",
               "description": f"Buyer-side order room for {SC['order']['order_id']}: spec, quotes, approvals, PO."},
     "deccan": {"name": f"{ORDER_SHORT} · Deccan Bolt Works · Sealed", "channel_type": "channel_private",
+               "read_visibility": "private", "write_visibility": "private",
                "agents": ["mandi-negotiator-deccan", "deccan-sales", "mandi-auditor"], "people": ["asha"],
                "instructions": "vendor.md", "description": "Sealed negotiation room: Sahyadri Motors ↔ Deccan Bolt Works."},
     "ganesh": {"name": f"{ORDER_SHORT} · Shree Ganesh Fasteners · Sealed", "channel_type": "channel_private",
+               "read_visibility": "private", "write_visibility": "private",
                "agents": ["mandi-negotiator-ganesh", "ganesh-sales", "mandi-auditor"], "people": ["sanjay"],
                "instructions": "vendor.md", "description": "Sealed negotiation room: Sahyadri Motors ↔ Shree Ganesh Fasteners."},
     "apex": {"name": f"{ORDER_SHORT} · Apex Precision · Sealed", "channel_type": "channel_private",
+             "read_visibility": "private", "write_visibility": "private",
              "agents": ["mandi-negotiator-apex", "apex-sales", "mandi-auditor"], "people": ["karan"],
              "instructions": "vendor.md", "description": "Sealed negotiation room: Sahyadri Motors ↔ Apex Precision Components."},
 }
@@ -98,6 +103,12 @@ async def main() -> int:
     async with httpx.AsyncClient(timeout=10) as c:
         h = await c.get(f"{base}/health")
         log(f"✓ Switch at {base} → /health {h.status_code} {h.text[:80]}")
+    plan_problems = sealed.config_problems(ROOMS, SC["personas"], SC["vendors"])
+    if plan_problems:
+        for pr in plan_problems:
+            log(f"✗ sealed-room plan: {pr}")
+        return 1
+    log("✓ sealed-room plan: supplier rooms are private channels with private read/write visibility")
     k = keys()
     missing = [n for r in ROOMS.values() for n in r["agents"] if n not in k]
     if missing:
@@ -131,8 +142,7 @@ async def main() -> int:
         args = dict(name=spec["name"], description=spec["description"], agent_names=spec["agents"],
                     user_names=[MM_USER[p] for p in spec["people"]], channel_type=spec["channel_type"],
                     bridge_id=mm["id"], instructions=instr,
-                    read_visibility="private" if key != "order" else "public",
-                    write_visibility="private" if key != "order" else "public")
+                    read_visibility=spec["read_visibility"], write_visibility=spec["write_visibility"])
         if a.dry_run:
             log(f"• would create room {key}: {json.dumps({k2: v for k2, v in args.items() if k2 != 'instructions'})}")
             continue
@@ -223,12 +233,12 @@ async def main() -> int:
 
     # ---------------------------------------------------------------- sealed-ness check
     sealed_ok = True
-    for v in ("deccan", "ganesh", "apex"):
-        names = {p.get("name") for p in participants.get(v, [])}
-        others = {f"{o}-sales" for o in ("deccan", "ganesh", "apex") if o != v}
-        if names & others:
+    for v in sealed.vendor_keys(ROOMS):
+        for pr in sealed.participant_problems(v, participants.get(v, []), all_vendor_keys=sealed.vendor_keys(ROOMS),
+                                              persona_names=names_to_persona, vendors=SC["vendors"],
+                                              personas=SC["personas"]):
             sealed_ok = False
-            log(f"✗ room {v} contains another vendor's agent: {names & others}")
+            log(f"✗ {pr}")
     log("✓ sealed rooms: each vendor agent is only in its own room" if sealed_ok else "✗ sealed check failed")
 
     # ---------------------------------------------------------------- addressing policies (Gateway, admin)

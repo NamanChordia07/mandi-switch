@@ -32,6 +32,11 @@ def check(ok: bool, what: str, fix: str = "") -> bool:
     return ok
 
 
+def warn(what: str, hint: str = "") -> None:
+    """Shown but not counted: something doctor could not verify on this machine."""
+    print(f"  ⚠️  {what}" + (f"\n      ↳ {hint}" if hint else ""))
+
+
 def http_get(url: str, headers: dict | None = None, timeout: float = 4.0):
     import httpx
     try:
@@ -107,6 +112,8 @@ def main() -> int:
     r = http_get(f"{mm.rstrip('/')}/api/v4/system/ping")
     check(not isinstance(r, Exception) and r.status_code == 200, f"Mattermost {mm}", "Set MATTERMOST_URL from Console")
 
+    sealed_rooms(sw_ok, keys, ids)
+
     print("\nMandi")
     core = os.environ.get("CORE_URL", "http://127.0.0.1:8700")
     r = http_get(f"{core}/health")
@@ -123,6 +130,96 @@ def main() -> int:
     failed = [r for r in results if not r[0]]
     print(f"\n{len(results) - len(failed)}/{len(results)} checks passed.")
     return 0 if not failed else 1
+
+
+def sealed_rooms(sw_ok: bool, keys: dict, ids: dict) -> None:
+    """Supplier rooms must be private. Fails on the room plan, the addressing plan, live membership in Switch, and
+    the Mattermost channel type, as far as this machine can verify each."""
+    import asyncio
+
+    import yaml
+    from common import sealed
+    print("\nSealed supplier rooms")
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("bootstrap_switch", ROOT / "scripts" / "bootstrap_switch.py")
+    bs = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bs)  # only reads config at import time; main() is not run
+    sc = yaml.safe_load((ROOT / "config" / "scenario.yaml").read_text(encoding="utf-8"))
+    problems = sealed.config_problems(bs.ROOMS, sc["personas"], sc["vendors"])
+    check(not problems, "room plan: supplier rooms are private channels, private read/write visibility, "
+          "one supplier each" + ("" if not problems else f" ({'; '.join(problems)})"),
+          "fix ROOMS in scripts/bootstrap_switch.py")
+    plan_path = ROOT / "secrets" / "addressing-plan.local.json"
+    if plan_path.exists() and ids.get("rooms"):
+        plan = json.loads(plan_path.read_text(encoding="utf-8"))
+        problems = sealed.policy_problems(plan, ids["rooms"])
+        check(not problems, "addressing plan: each supplier agent can be addressed only in its own room"
+              + ("" if not problems else f" ({'; '.join(problems)})"), "python scripts/bootstrap_switch.py")
+    else:
+        warn("addressing plan not written yet", "python scripts/bootstrap_switch.py")
+    vkeys = [v for v in sealed.vendor_keys(bs.ROOMS) if v in ids.get("rooms", {})]
+    if sw_ok and keys and vkeys:
+        names = {}
+        for p_, info in sc["personas"].items():
+            names[p_] = p_
+            names[bs.MM_USER[p_].lower()] = p_
+            names[info["name"].lower()] = p_
+
+        async def live() -> list[str]:
+            out: list[str] = []
+            for v in vkeys:
+                neg = bs.agent(f"mandi-negotiator-{v}", rooms=[ids["rooms"][v]])
+                prts = await bs.with_connection(neg, lambda neg=neg: neg.call("list_participants"))
+                out += sealed.participant_problems(v, prts or [], all_vendor_keys=sealed.vendor_keys(bs.ROOMS),
+                                                   persona_names=names, vendors=sc["vendors"],
+                                                   personas=sc["personas"])
+            return out
+        try:
+            problems = asyncio.run(live())
+            check(not problems, f"live membership in Switch: no outsider in {len(vkeys)} supplier rooms"
+                  + ("" if not problems else f" ({'; '.join(problems)})"),
+                  "remove the outsider from the room (Switch Console → Rooms), then rerun doctor")
+        except Exception as exc:  # noqa: BLE001
+            warn(f"could not list live room members ({exc})",
+                 "check the negotiator keys: python scripts/register_agents.py")
+    else:
+        warn("live room membership not checked (Switch or rooms not set up yet)")
+    container = os.environ.get("MATTERMOST_CONTAINER", "")
+    docker = shutil.which("docker")
+    if container and docker:
+        team = os.environ.get("MATTERMOST_TEAM", "switch") or "switch"
+        r = subprocess.run([docker, "exec", container, "mmctl", "--local", "channel", "list", team, "--json"],
+                           capture_output=True, text=True, timeout=30)
+        channels = _json_objects(r.stdout) if r.returncode == 0 else []
+        if channels:
+            expected = {v: bs.ROOMS[v]["name"] for v in vkeys or sealed.vendor_keys(bs.ROOMS)}
+            problems = sealed.mattermost_channel_problems(channels, expected)
+            check(not problems, "Mattermost: supplier channels are private (type P)"
+                  + ("" if not problems else f" ({'; '.join(problems)})"),
+                  "convert the channel to private in Mattermost (channel menu → Convert to Private Channel)")
+        else:
+            warn("could not read Mattermost channel types via mmctl", (r.stderr or r.stdout).strip()[:160])
+    else:
+        warn("Mattermost channel types not checked (MATTERMOST_CONTAINER not set)")
+
+
+def _json_objects(text: str) -> list[dict]:
+    """mmctl --json prints either one JSON array or one object per line."""
+    text = text.strip()
+    if not text:
+        return []
+    try:
+        data = json.loads(text)
+        return [d for d in (data if isinstance(data, list) else [data]) if isinstance(d, dict)]
+    except json.JSONDecodeError:
+        out = []
+        for line in text.splitlines():
+            try:
+                d = json.loads(line)
+                out += d if isinstance(d, list) else [d]
+            except json.JSONDecodeError:
+                continue
+        return [d for d in out if isinstance(d, dict)]
 
 
 if __name__ == "__main__":
