@@ -35,7 +35,7 @@ async def _lifespan(_app):
 
 app = FastAPI(title="Mandi Core", version="0.1.0", lifespan=_lifespan,
               description="Deterministic procurement rules behind Mandi's Switch agents. "
-                          "Agents negotiate. Humans decide. Switch enforces.")
+                          "Agents negotiate. Humans decide. Switch records who said yes.")
 app.add_middleware(CORSMiddleware, allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
                    allow_methods=["*"], allow_headers=["*"])
 
@@ -394,6 +394,48 @@ def doc_saved(order_id: str, body: DocIn, caller: Caller = Depends(caller_dep)):
 def get_outcome(order_id: str, caller: Caller = Depends(caller_dep)):
     require(caller, "agents", "mcp_purchase_desk", "mcp_po_issuer", "ui", "director")
     return service.outcome(order_id)
+
+
+# ----------------------------------------------------------------------------- MOCK exports
+def _exports_on() -> None:
+    if not service.exports_enabled():
+        raise HTTPException(404, "Exports are switched off (MANDI_EXPORTS=0).")
+
+
+@app.get("/orders/{order_id}/exports")
+def list_exports(order_id: str, caller: Caller = Depends(caller_dep)):
+    """Write the MOCK exports (comparative statement; SAP-style PO once issued) and return their paths."""
+    require(caller, "agents", "ui", "director")
+    _exports_on()
+    return {"mock": True, "files": service.write_exports(order_id)}
+
+
+@app.get("/orders/{order_id}/exports/comparative-statement.csv")
+def export_statement(order_id: str, caller: Caller = Depends(caller_dep)):
+    require(caller, "agents", "ui", "director", "mcp_purchase_desk", "mcp_po_issuer")
+    _exports_on()
+    from fastapi.responses import Response
+    from .exports import statement_csv
+    return Response(statement_csv(service.comparative_statement(order_id)), media_type="text/csv",
+                    headers={"Content-Disposition": f'attachment; filename="{order_id}-comparative-statement-MOCK.csv"'})
+
+
+@app.get("/orders/{order_id}/exports/po-sap-style.json")
+def export_po_json(order_id: str, caller: Caller = Depends(caller_dep)):
+    require(caller, "agents", "ui", "director", "mcp_purchase_desk", "mcp_po_issuer")
+    _exports_on()
+    return service.po_export(order_id)
+
+
+@app.get("/orders/{order_id}/exports/po-sap-style.csv")
+def export_po_csv(order_id: str, caller: Caller = Depends(caller_dep)):
+    require(caller, "agents", "ui", "director", "mcp_purchase_desk", "mcp_po_issuer")
+    _exports_on()
+    from fastapi.responses import Response
+    from .exports import po_csv
+    exp = service.po_export(order_id)
+    return Response(po_csv(exp), media_type="text/csv",
+                    headers={"Content-Disposition": f'attachment; filename="{exp["header"]["po_number"]}-sap-style-MOCK.csv"'})
 
 
 # ----------------------------------------------------------------------------- switch feed + status

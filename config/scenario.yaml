@@ -83,3 +83,15 @@ negotiation:
 # Paper-process baseline used on the Outcome card.
 baseline:
   paper_process_days: "4-10"
+
+# MOCK exports (core/exports.py). Mandi is NOT integrated with SAP or any ERP: these only shape the agreed deal like
+# the header/item data a buyer keys into an ERP purchase order. All codes are fictional. Set MANDI_EXPORTS=0 to
+# switch the exports off.
+po_export:
+  purchasing_org: SM10
+  purchasing_group: P04
+  plant_code: CK02
+  material: SM-STD-0412-C
+  unit: PC
+  price_unit: 1
+  vendor_codes: { deccan: V100231, ganesh: V100417, apex: V100562, konkan: V100088 }

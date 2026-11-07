@@ -1,7 +1,7 @@
 import { Check, Clock3, FileCheck2, FileText, Lock, ShieldCheck, X } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useEffect, useState } from 'react'
-import { pdfUrl } from '../../lib/api'
+import { exportUrl, pdfUrl } from '../../lib/api'
 import { clock, group, unit } from '../../lib/format'
 import { useStore } from '../../lib/store'
 import { Coach, Empty, Money, cx } from '../ui'
@@ -127,7 +127,7 @@ export function OutcomePanel() {
           <li className="flex gap-2"><Check size={16} className="mt-0.5 text-mint" />Caught: {(o.traps ?? []).map((t) => t.split(': ')[1].replace('_', ' ').toLowerCase()).join(', ')} · prompt injection blocked</li>
           <li className="flex gap-2"><Check size={16} className="mt-0.5 text-mint" />Spec, comparison, negotiation logs, PO and audit log saved as Switch room documents</li>
         </ul>
-        <p className="mt-auto text-[18px] font-medium tracking-tight text-text">Agents negotiate. Humans decide. <span className="text-marigold">Switch enforces.</span></p>
+        <p className="mt-auto text-[18px] font-medium tracking-tight text-text">Agents negotiate. Humans decide. <span className="text-marigold">Switch records who said yes.</span></p>
       </div>
       <div className="flex min-h-0 flex-col border-l border-hair bg-ink p-4">
         <div className="mb-2 flex items-center justify-between text-[12.5px] text-sub">
@@ -137,6 +137,12 @@ export function OutcomePanel() {
         <a href={pdfUrl(o.order_id)} target="_blank" rel="noreferrer" className="min-h-0 flex-1 overflow-hidden rounded border border-hair bg-white">
           <img src={pdfUrl(o.order_id).replace('/po.pdf', '/po.png')} alt={`Purchase order ${o.po.id}, first page`} className="w-full" />
         </a>
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11.5px] text-sub" title="MOCK exports: not an SAP or ERP integration. Field names are illustrative and unverified.">
+          <span className="rounded border border-hair px-1.5 py-px text-[10px] uppercase tracking-wide text-mute">Mock</span>
+          <a className="text-marigold hover:underline" href={exportUrl(o.order_id, 'po-sap-style.json')} target="_blank" rel="noreferrer">SAP-style PO (JSON)</a>
+          <a className="text-marigold hover:underline" href={exportUrl(o.order_id, 'po-sap-style.csv')}>CSV</a>
+          <a className="text-marigold hover:underline" href={exportUrl(o.order_id, 'comparative-statement.csv')}>Comparative statement (CSV)</a>
+        </div>
         <div className="num mt-2 truncate text-[11px] text-mute" title={o.po.sha256}><Clock3 size={11} className="mr-1 inline" />sha256 {o.po.sha256.slice(0, 24)}…</div>
       </div>
       <Coach n={8} text="The PO PDF carries both approvals and the hash of the final audit event. The same record is saved in the Switch order room." />

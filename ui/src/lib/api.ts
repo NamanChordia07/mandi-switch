@@ -20,6 +20,8 @@ export async function director(action: string, body: Record<string, unknown> = {
 }
 
 export const pdfUrl = (orderId: string) => `/orders/${orderId}/po.pdf?token=${encodeURIComponent(token())}`
+export const exportUrl = (orderId: string, file: 'comparative-statement.csv' | 'po-sap-style.json' | 'po-sap-style.csv') =>
+  `/orders/${orderId}/exports/${file}?token=${encodeURIComponent(token())}`
 export const quotePageUrl = (orderId: string, quoteId: string, page: number) =>
   `/orders/${orderId}/quotes/${quoteId}/page/${page}.png?token=${encodeURIComponent(token())}`
 

@@ -1033,3 +1033,47 @@ def reset(*, actor: str) -> None:
                      summary="Demo reset: fresh Mandi Core database.", data={})
         s.commit()
     bus.publish("demo.reset", None)
+
+
+# ----------------------------------------------------------------------------- MOCK exports
+def exports_enabled() -> bool:
+    return env("MANDI_EXPORTS", "1").strip() != "0"
+
+
+def comparative_statement(order_id: str) -> dict[str, Any]:
+    from . import exports
+    return exports.comparative_statement(order_view(order_id), comparison(order_id))
+
+
+def po_export(order_id: str) -> dict[str, Any]:
+    from . import exports
+    view = order_view(order_id)
+    if not view["po"]:
+        raise NotFound("No PO issued yet.")
+    issued = view["po"]["issued_at"][:10]
+    return exports.po_export(view, scenario().get("po_export", {}), document_date=date.fromisoformat(issued))
+
+
+def write_exports(order_id: str) -> dict[str, str]:
+    """Write the MOCK exports next to the PO PDF. Returns {kind: path relative to ROOT}."""
+    import json as _json
+
+    from . import exports
+    if not exports_enabled():
+        raise CoreError("Exports are switched off (MANDI_EXPORTS=0).", status=404)
+    folder = generated_dir() / order_id
+    folder.mkdir(parents=True, exist_ok=True)
+    out: dict[str, str] = {}
+    st = folder / "comparative-statement-MOCK.csv"
+    st.write_text(exports.statement_csv(comparative_statement(order_id)), encoding="utf-8")
+    out["comparative_statement_csv"] = str(st.relative_to(ROOT))
+    view = order_view(order_id)
+    if view["po"]:
+        exp = po_export(order_id)
+        pj = folder / f"{view['po']['id']}-sap-style-MOCK.json"
+        pj.write_text(_json.dumps(exp, indent=2, ensure_ascii=False), encoding="utf-8")
+        pc = folder / f"{view['po']['id']}-sap-style-MOCK.csv"
+        pc.write_text(exports.po_csv(exp), encoding="utf-8")
+        out["po_json"] = str(pj.relative_to(ROOT))
+        out["po_csv"] = str(pc.relative_to(ROOT))
+    return out

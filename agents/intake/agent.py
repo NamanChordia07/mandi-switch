@@ -333,6 +333,37 @@ class Intake:
             log.warning("PO upload to Switch failed (%s); posting a link instead", exc)
             await self.sw.post(self.order_room, f"📄 {po['id']} is ready in the Control Room "
                                f"(Mandi Core: /orders/{oid}/po.pdf).")
+        await self.save_exports(oid, po)
+
+    async def save_exports(self, oid: str, po: dict[str, Any]) -> None:
+        """MOCK exports into the order room: the comparative statement and an SAP-style PO (not an SAP integration).
+        Switched off with MANDI_EXPORTS=0. Never blocks the PO path: any failure is only logged."""
+        try:
+            files = (await self.core.get(f"/orders/{oid}/exports"))["files"]
+        except Exception as exc:
+            log.info("exports not saved (%s)", exc)
+            return
+        docs = [("05-po-sap-style-MOCK", "po_json", f"MOCK SAP-style export of {po['id']}",
+                 "MOCK export shaped like ERP purchase-order header + item data, so the agreed deal can be keyed "
+                 "into the system of record without retyping. Not an SAP integration; field names are illustrative "
+                 "and unverified."),
+                ("06-comparative-statement-MOCK", "comparative_statement_csv", f"MOCK comparative statement for {oid}",
+                 "MOCK comparison form for the file: quoted terms, landed cost, traps, final offers and the award.")]
+        for name, key, desc, instr in docs:
+            if key not in files:
+                continue
+            try:
+                doc_id = await self.sw.upsert_doc(name, desc, instr, (ROOT / files[key]).read_text(encoding="utf-8"))
+                await self.core.post(f"/orders/{oid}/docs", {"room_key": "order", "title": name, "document_id": doc_id})
+            except Exception as exc:
+                log.warning("could not save %s room document: %s", name, exc)
+        for key in ("po_csv", "comparative_statement_csv"):
+            if key in files:
+                try:
+                    await self.sw.upload(self.order_room, ROOT / files[key], mimetype="text/csv",
+                                         caption="🧾 MOCK export (not an SAP integration): " + Path(files[key]).name)
+                except Exception as exc:
+                    log.warning("could not upload %s: %s", key, exc)
 
     async def run(self) -> None:
         await asyncio.gather(self.sw.run(), self.follow_core())
