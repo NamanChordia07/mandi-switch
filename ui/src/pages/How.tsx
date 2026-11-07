@@ -12,6 +12,17 @@ const CAST = [
   { who: 'mandi-auditor', what: 'Neutral record-keeper. Listens everywhere, writes the audit log.', kind: 'agent' },
 ]
 
+// Keep in sync with the README's stage map.
+const STAGES: { name: string; built: boolean; what: string }[] = [
+  { name: 'Requisition approval', built: false, what: 'Today the requester confirms the spec in chat. A manager approving the requisition itself is roadmap.' },
+  { name: 'RFQ and quotes', built: true, what: 'Sealed room per supplier; PDF quotes read with evidence; traps and prompt injection caught. Works with PDF-only suppliers too.' },
+  { name: 'Comparative statement', built: true, what: 'Landed-cost comparison with a code-written recommendation, saved to the room; MOCK CSV export.' },
+  { name: 'Negotiation', built: true, what: 'Parallel, in sealed rooms, citing only verified offers. Supplier agents are an opt-in "supplier desk".' },
+  { name: 'Sign-off chain', built: true, what: 'Value tiers; purchase head then finance allow a Claude Code permission request that Switch relays and records. Reminder and escalation chaser: roadmap.' },
+  { name: 'Purchase order', built: true, what: 'PO PDF after the rules check again; MOCK SAP-style PO export (not an SAP integration) for the system of record.' },
+  { name: 'Delivery receipt', built: false, what: 'Goods receipt at the plant and closing the order: roadmap.' },
+]
+
 const FLOW = [
   'Rohan types a messy request in the order room.',
   'The intake agent turns it into a precise spec; Rohan replies “yes”.',
@@ -30,8 +41,8 @@ export function How() {
         <a href="#/" className="inline-flex items-center gap-1.5 text-[13px] text-sub hover:text-text"><ArrowLeft size={14} /> Back to the Control Room</a>
         <h1 className="mt-6 text-[40px] font-semibold leading-tight tracking-tight">How Mandi works</h1>
         <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-sub">
-          Buying one part can take a factory two weeks of emails. Mandi lets AI agents from different companies negotiate in sealed chat rooms —
-          while every rupee still needs a person's tap to move.
+          Buying one part can take a factory two weeks: quotes in five formats, a comparison built by hand, then signatures going back and forth
+          between purchase and finance. Mandi runs that back-and-forth in team chat with AI agents, and every rupee still needs a person's tap to move.
         </p>
 
         <h2 className="mt-12 text-[20px] font-semibold">What Switch is</h2>
@@ -66,6 +77,22 @@ export function How() {
             </div>
           ))}
         </div>
+
+        <h2 className="mt-12 text-[20px] font-semibold">Stage map: where Mandi sits in a purchase</h2>
+        <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-sub">
+          Most of the pain is inside the buyer: quotes, the comparison, and signatures going back and forth between purchase, finance and other teams.
+          Mandi handles that back-and-forth in chat <em>before</em> the record exists, and ends with a PO ready for the ERP, which stays the system of record.
+        </p>
+        <ol className="mt-4 grid grid-cols-7 gap-2">
+          {STAGES.map((st, i) => (
+            <li key={st.name} className={`rounded-lg border p-3 ${st.built ? 'border-mint/40 bg-pane' : 'border-dashed border-hair bg-ink'}`}>
+              <div className="num text-[11px] text-mute">{i + 1}</div>
+              <div className="mt-0.5 text-[13.5px] font-semibold leading-snug text-text">{st.name}</div>
+              <div className={`mt-1.5 inline-block rounded px-1.5 py-px text-[10.5px] uppercase tracking-wide ${st.built ? 'bg-mint/15 text-mint' : 'border border-hair text-mute'}`}>{st.built ? 'Built' : 'Roadmap'}</div>
+              <p className="mt-2 text-[12px] leading-relaxed text-sub">{st.what}</p>
+            </li>
+          ))}
+        </ol>
 
         <h2 className="mt-12 text-[20px] font-semibold">The flow, in eight steps</h2>
         <ol className="mt-4 space-y-2.5">
