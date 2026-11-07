@@ -127,4 +127,4 @@ makes a "fooled" agent try to issue a PO for the injecting supplier; it gets fiv
 
 Mandi is open source: `TODO repo link`. Demo video: `TODO`. #HowISwitch
 
-*Agents negotiate. Humans decide. Switch enforces.*
+*Agents negotiate. Humans decide. Switch records who said yes.*

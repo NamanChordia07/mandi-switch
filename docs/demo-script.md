@@ -24,7 +24,7 @@ Director → *Reset demo* · in Mattermost run `!agents-status` in the order roo
 | 1:25–2:05 | Negotiation | Price ladder converging; *Leverage verified* chip; Asha's window: `🔒 Approval needed` → she types `decline`; chip *Asked Asha — declined*; quick Director red-team *fake ₹33.00* → *Blocked before reaching the room* | "Agents haggle in parallel, citing only offers Mandi has verified — never naming who. When Deccan's agent is asked to go below its limit, it must ask its own human. She says no." |
 | 2:05–2:35 | Approvals | Meera: `@purchase-desk endorse` → Switch request with buttons → **Allow once**; Vikram: `@po-issuer release the PO` → **Allow once**; `!roles` | "The money needs two humans. Each approves in Switch, on an agent that listens only to them. Only one agent can ever issue a PO." |
 | 2:35–2:50 | Outcome | PO PDF in the room; Outcome card: ₹62,000 saved, minutes not days, 3 traps, 1 attack blocked; `!list-documents` | "Minutes, not days. Sixty-two thousand rupees saved. Every step recorded in the room." |
-| 2:50–3:00 | Close | Wordmark + tagline | "Agents negotiate. Humans decide. Switch enforces. — Mandi." |
+| 2:50–3:00 | Close | Wordmark + tagline | "Agents negotiate. Humans decide. Switch records who said yes. — Mandi." |
 
 ## Fallbacks during recording
 

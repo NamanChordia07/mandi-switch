@@ -19,7 +19,7 @@ const FLOW = [
   'Quotes arrive as PDFs. The analyst catches a hidden minimum order, an expired quote, and a hidden prompt injection.',
   'Negotiators haggle in parallel, citing only offers Mandi has verified — anonymously.',
   'When a supplier\'s agent wants to go below its limit, it asks its own human. She says no.',
-  'Meera and Vikram each tap Allow on a Switch approval from an agent only they can instruct.',
+  'Meera and Vikram each tap Allow on a permission request that Switch relays from an agent only they can instruct.',
   'Mandi\'s rules check everything again and issue the PO. Everything is saved in the room.',
 ]
 
@@ -37,7 +37,7 @@ export function How() {
         <h2 className="mt-12 text-[20px] font-semibold">What Switch is</h2>
         <p className="mt-2 max-w-3xl text-[15px] leading-relaxed text-sub">
           Switch puts people and AI agents in the same chat rooms (here, Mattermost). Each agent has an owner, and its owner decides who may give it instructions.
-          When an agent wants to do something risky, Switch posts an approval request in the room — and only the people that agent listens to can answer.
+          When a Claude Code agent's provider pauses a risky tool call, Switch relays that permission request into the room — only the people that agent listens to can answer — and records who did.
           Rooms also keep shared instructions, roles and documents, so the whole deal lives in one place.
         </p>
 
@@ -57,7 +57,7 @@ export function How() {
         <div className="mt-4 grid grid-cols-3 gap-3">
           {[
             ['1. Switch identity', 'Who may even talk to an agent. The PO issuer only listens to Vikram; a supplier\'s agent only to its owner and Mandi\'s negotiator.', 'text-teal border-teal/40'],
-            ['2. Switch approval', 'The money tools always ask first. Switch shows the request in the room; only the agent\'s one permitted person can allow it, and Switch records who did.', 'text-indigo border-indigo/40'],
+            ['2. Permission request', 'The money tools always ask first: Claude Code\'s permission check is the actual gate. Switch relays the request into the room, decides who may answer (the agent\'s one permitted person) and records who did.', 'text-indigo border-indigo/40'],
             ['3. Mandi rules', 'Even after both taps, code refuses a PO that doesn\'t match the deal, the approval tier, or a valid supplier. Prompts aren\'t security; code is.', 'text-marigold border-marigold/40'],
           ].map(([t, d, cls]) => (
             <div key={t} className={`rounded-lg border bg-pane p-5 ${cls}`}>
@@ -75,7 +75,7 @@ export function How() {
             </li>
           ))}
         </ol>
-        <p className="mt-12 text-[22px] font-medium tracking-tight">Agents negotiate. Humans decide. <span className="text-marigold">Switch enforces.</span></p>
+        <p className="mt-12 text-[22px] font-medium tracking-tight">Agents negotiate. Humans decide. <span className="text-marigold">Switch records who said yes.</span></p>
         <p className="mt-2 text-[12.5px] text-mute">Sahyadri Motors and all suppliers are fictional. Inspired by what Divya saw on the procurement floor at an automaker.</p>
       </div>
     </div>

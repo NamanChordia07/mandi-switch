@@ -2,7 +2,7 @@
 
 **AI agents from different companies negotiate a purchase in sealed Switch rooms. Every rupee still needs a human's tap to move.**
 
-*Agents negotiate. Humans decide. Switch enforces.*
+*Agents negotiate. Humans decide. Switch records who said yes.*
 
 Built for the **Flip the Switch** hackathon (WeMakeDevs × DevTools Academy, powered by [Switch](https://docs.switchagents.ai) by SandboxAQ) · Track 01: Best Business Workflow
 

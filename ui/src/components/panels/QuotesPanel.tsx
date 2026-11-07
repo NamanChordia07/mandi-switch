@@ -152,7 +152,7 @@ export function InjectionModal() {
                 <div className="mb-2 text-[13px] font-medium text-text">Even if an agent had been fooled, three locks still hold</div>
                 <ol className="space-y-1.5 text-[12.5px] text-sub">
                   <li><span className="text-teal">1 · Switch identity</span> — the PO issuer takes instructions from Vikram only.</li>
-                  <li><span className="text-indigo">2 · Switch approval</span> — issuing a PO is a permission request only Vikram can allow.</li>
+                  <li><span className="text-indigo">2 · Permission request</span> — issuing a PO pauses in Claude Code; Switch relays the request and only Vikram may answer it.</li>
                   <li><span className="text-marigold">3 · Mandi rules</span> — code refuses a PO for a disqualified vendor, without endorsement, or off-ledger.</li>
                 </ol>
               </div>

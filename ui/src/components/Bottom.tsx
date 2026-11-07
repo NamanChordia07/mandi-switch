@@ -50,7 +50,7 @@ export function ThreeLocks() {
   const refusal = feed.some((f) => /can'?t act on|not permitted|isn'?t permitted|only answers|refus/i.test(f.body) && f.sender_kind !== 'human')
   const locks = [
     { n: 1, name: 'Switch identity', tone: 'teal', on: refusal || has('ROOMS_OPENED'), note: refusal ? 'Refused a sender it does not answer' : 'Sealed rooms + who-can-talk rules' },
-    { n: 2, name: 'Switch approval', tone: 'indigo', on: has('ENDORSED') || has('VENDOR_APPROVAL_DECIDED'), note: has('ENDORSED') ? 'Humans approved in Switch' : 'Permission requests gate money' },
+    { n: 2, name: 'Permission request', tone: 'indigo', on: has('ENDORSED') || has('VENDOR_APPROVAL_DECIDED'), note: has('ENDORSED') ? 'Humans allowed it; Switch recorded who' : 'Claude Code asks; Switch relays' },
     { n: 3, name: 'Mandi rules', tone: 'marigold', on: has('LEVERAGE_BLOCKED') || has('PO_REFUSED_BY_RULE') || has('INJECTION_BLOCKED'), note: has('PO_REFUSED_BY_RULE') ? 'Refused a PO by rule' : has('LEVERAGE_BLOCKED') ? 'Blocked an unverified claim' : has('INJECTION_BLOCKED') ? 'Blocked an injection' : 'Code checks every rupee' },
   ] as const
   const toneCls: Record<string, string> = { teal: 'border-teal/50 text-teal bg-teal/10', indigo: 'border-indigo/50 text-indigo bg-indigo/10', marigold: 'border-marigold/50 text-marigold bg-marigold/10' }

@@ -64,4 +64,4 @@ Minutes, not days. ₹62,000 saved. Every step recorded in the room.
 
 17
 00:02:50,000 --> 00:03:00,000
-Agents negotiate. Humans decide. Switch enforces. — Mandi.
+Agents negotiate. Humans decide. Switch records who said yes. — Mandi.

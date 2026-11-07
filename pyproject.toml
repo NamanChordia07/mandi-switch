@@ -1,7 +1,7 @@
 [project]
 name = "mandi"
 version = "0.1.0"
-description = "Mandi: cross-company AI procurement negotiation on Switch rooms. Agents negotiate. Humans decide. Switch enforces."
+description = "Mandi: cross-company AI procurement negotiation on Switch rooms. Agents negotiate. Humans decide. Switch records who said yes."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
