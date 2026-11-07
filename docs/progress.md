@@ -22,6 +22,24 @@ Deadline: Sat 7 Nov 2026, 11:59 PM IST (target submit 9 PM).
 - [ ] Phase 11 — stretch (optional)
 - [ ] Phase 12 — final judge review + submission (video recording by Naman/Divya)
 
+## Status (7 Nov, brief v2 work, branch claude/zen-planck-5mveg4)
+- [x] P0 offline paths verified: pytest (71), simulate.py replay, tests/run_fake_e2e.py (PASS). **Live rehearsal + doctor
+      against real Switch still to run on the Windows machine** (no Switch in the cloud session).
+- [x] P0 README: internal pain first, two-minute replay look first (bash + PowerShell, verified in a clean clone),
+      honest wording (Switch relays/records; Claude Code permission is the gate; Core re-checks), stage map.
+- [x] P0 sealed rooms: common/sealed.py; bootstrap refuses a leaky plan; doctor "Sealed supplier rooms" section checks
+      room plan, addressing plan, live membership (Switch) and Mattermost channel type (mmctl --json).
+- [x] P0 clean-clone test: fixed clone URL, Core-before-simulate, replay needs no Switch/Docker/API key, REGKEYs.
+- [x] P1-1 category profiles: **NO-GO** (bolt-specific QuoteRow columns, LLM schema, regex parser, trap codes, per-unit
+      negotiation/PO). Roadmap entry in README. Bolt demo unchanged.
+- [x] P1-2 stage map in README + Control Room (How it works).
+- [x] P1-3 MOCK exports: comparative statement CSV + SAP-style PO JSON/CSV (core/exports.py; room docs 05/06;
+      Outcome card links; MANDI_EXPORTS=0 off). Field names unverified: ask Divya's purchase colleague to check.
+- [x] P1-4 sign-off chaser (core/chaser.py; off by default, MANDI_CHASER=1).
+- [x] Demo script + captions follow the brief's order. P2: Konkan is already the PDF-only supplier (no agent, no room).
+- [ ] Ask Divya: her company's comparative-statement form fields; exact SAP product (S/4HANA?).
+- [ ] Record video (docs/demo-script.md), add link to README top, submit.
+
 ## Live environment (this machine)
 - Switch API http://127.0.0.1:63663 · Mattermost http://localhost:63664 (team `switch`) · Mandi Core/Control Room http://127.0.0.1:8700
 - Persona logins: secrets/demo-users.local.json · agent keys: secrets/agent-keys.local.json · ids: secrets/switch-ids.local.json
